@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Will You Go Out With Me?</title>
+    <style>
+      body {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        background-color: #ffccff; /* Light pink background */
+      }
+
+      #goodbye img {
+        max-width: 100%;
+        max-height: 400px;
+        margin: 0 auto;
+        overflow: hidden;
+      }
+
+      #slideshow {
+        position: relative;
+        width: 600px; /* Adjust as needed */
+        margin: 0 auto;
+        overflow: hidden;
+        text-align: center; /* Center align images */
+      }
+
+      #slideshow img {
+        max-width: 100%; /* Change width to max-width */
+        max-height: 400px; /* Set max-height */
+        width: auto; /* Reset width */
+        height: auto; /* Reset height */
+        display: none;
+        margin: 0 auto; /* Center align images */
+      }
+
+      #slideshow img.active {
+        display: block;
+      }
+
+      .caption {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 5px;
+        display: none; /* Initially hide captions */
+      }
+
+      .caption.active {
+        display: block; /* Show active caption */
+      }
+
+      /* Style for the previous and next buttons */
+      .prev,
+      .next {
+        position: absolute;
+        top: 50%; /* Vertically align to the middle */
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 20px;
+        padding: 10px;
+        cursor: pointer;
+        border: none;
+        z-index: 2;
+        transition: background-color 0.3s ease;
+      }
+
+      .prev {
+        left: 10px;
+      }
+
+      .next {
+        right: 10px;
+      }
+
+      /* Hover effect for buttons */
+      .prev:hover,
+      .next:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+      .form-container {
+        margin-top: 20px;
+      }
+      .hidden {
+        display: none;
+      }
+
+      #confetti-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 999; /* Ensure it's above other content */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="slideshow">
+      <h1>Welcome Nat! A little about me...</h1>
+      <button class="prev" onclick="prevSlide()">&#10094;</button>
+      <button class="next" onclick="nextSlide()">&#10095;</button>
+      <img class="active" src="assets/travel.jpg" alt="Image 1" />
+      <img src="assets/kids.jpg" alt="Image 2" />
+      <img src="assets/animals.jpg" alt="Image 3" />
+      <img src="assets/dress.jpg" alt="Image 4" />
+      <img src="assets/hikes.JPG" alt="Image 5" />
+      <img src="assets/smart.JPG" alt="Image 6" />
+      <img src="assets/stupid.JPG" alt="Image 7" />
+      <img src="assets/dates.JPG" alt="Image 8" />
+      <img src="assets/cook.JPG" alt="Image 9" />
+      <img src="assets/more dates.jpg" alt="Image 10" />
+      <!-- Add more images as needed -->
+      <div class="caption active">I make traveling fun</div>
+      <div class="caption">Kids like me</div>
+      <div class="caption">Animals love me (except for cats)</div>
+      <div class="caption">I am always dressed for the occasion</div>
+      <div class="caption">
+        A hike here and there keeps me connected with nature
+      </div>
+      <div class="caption">I am smart</div>
+      <div class="caption">But also stupid</div>
+      <div class="caption">We would go on so many dates</div>
+      <div class="caption">
+        I am a decent cook, just let me know your spice tolerance
+      </div>
+      <div class="caption">Did I mention dates? You will never be hungry</div>
+    </div>
+    <div id="intro">
+      <p>Dear Nat,</p>
+      <p>
+        I've put together this little website to ask you something special...
+      </p>
+    </div>
+    <div id="form-container" class="form-container">
+      <p>Will you go on a date with me?</p>
+
+      <button onclick="showDetails('yes')">Yes</button>
+      <button onclick="showNoPrompt()">No</button>
+    </div>
+    <div id="details" class="hidden">
+      <p>I am so happy!!!</p>
+      <p>Time: Dinner</p>
+      <p>Date: 03/20/2024</p>
+      <p>Place: Surprise</p>
+      <p>Feel free to contact me at</p>
+      <p>Phone: 7812815373</p>
+      <p>Email: devdamnit@gmail.com</p>
+      <p>Did I get any bonus points for this?</p>
+    </div>
+
+    <div id="noPrompt" class="hidden">
+      <p>Are you sure? 😢</p>
+      <!-- <button onclick="showDetails('no')">Yes</button> -->
+      <button onclick="goodbye()">Yes</button>
+      <button onclick="reset()">No</button>
+    </div>
+
+    <div id="goodbye" class="hidden">
+      <p>Perhaps in another lifetime, you'll be mine...</p>
+      <img src="assets/sad.jpg" alt="Image 11" />
+    </div>
+
+    <canvas id="confetti-canvas"> </canvas>
+
+    <script>
+      var slides = document.querySelectorAll("#slideshow img");
+      var captions = document.querySelectorAll(".caption");
+      var currentSlide = 0;
+
+      // Function to show confetti
+      function showConfetti() {
+        const confettiSettings = {
+          target: "confetti-canvas",
+          respawn: true,
+          colors: ["#ff0000", "#00ff00", "#0000ff"]
+        };
+
+        const confetti = new ConfettiGenerator(confettiSettings);
+        confetti.render();
+        setTimeout(() => {
+          confetti.clear();
+        }, 5000);
+      }
+
+      function prevSlide() {
+        slides[currentSlide].classList.remove("active");
+        captions[currentSlide].classList.remove("active");
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        slides[currentSlide].classList.add("active");
+        captions[currentSlide].classList.add("active");
+      }
+
+      function nextSlide() {
+        slides[currentSlide].classList.remove("active");
+        captions[currentSlide].classList.remove("active");
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add("active");
+        captions[currentSlide].classList.add("active");
+      }
+
+      function showDetails(response) {
+        if (response === "yes") {
+          document.getElementById("details").classList.remove("hidden");
+          document.getElementById("noPrompt").classList.add("hidden");
+          document.getElementById("intro").classList.add("hidden");
+          showConfetti();
+          document.getElementById("slideshow").style.display = "none"; // Hide slideshow container
+          document.getElementById("form-container").style.display = "none"; // Hide previous questions and buttons
+        } else {
+          showNoPrompt();
+        }
+      }
+
+      function showNoPrompt() {
+        document.getElementById("form-container").classList.add("hidden");
+        document.getElementById("noPrompt").classList.remove("hidden");
+      }
+
+      function goodbye() {
+        document.getElementById("goodbye").classList.remove("hidden");
+        document.getElementById("noPrompt").classList.add("hidden");
+        document.getElementById("intro").classList.add("hidden");
+        document.getElementById("slideshow").style.display = "none"; // Hide slideshow container
+        document.getElementById("form-container").style.display = "none"; // Hide previous questions and buttons
+      }
+
+      function reset() {
+        document.getElementById("form-container").classList.remove("hidden");
+        document.getElementById("noPrompt").classList.add("hidden");
+        document.getElementById("details").classList.add("hidden");
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/confetti-js"></script>
+  </body>
+</html>
